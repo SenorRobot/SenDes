@@ -1,0 +1,17 @@
+<package>
+  <description brief="sendes">
+
+     sendes
+
+  </description>
+  <author>Andrew LeCain</author>
+  <license>BSD</license>
+  <depend package="roscpp"/>
+  <depend package="tf"/>
+  <depend package="nav_msgs"/>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/sendes</url>
+
+</package>
+
+
