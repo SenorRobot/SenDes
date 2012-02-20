@@ -13,7 +13,7 @@ int main(int argc, char** argv){
     broadcaster.sendTransform(
       tf::StampedTransform(
         tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.1, 0.0, 0.2)),
-        ros::Time::now(),"base_link", "base_laser"));
+        ros::Time::now(),"base_link", "openni_camera"));
     r.sleep();
   }
 }
