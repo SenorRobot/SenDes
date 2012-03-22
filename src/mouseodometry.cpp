@@ -11,7 +11,7 @@
 
 double x = 0.0, lastx = 0.0;
 double y = 0.0, lasty = 0.0;
-	
+
 double pos = 0.0;
 double lastpos = 0.0;
 
@@ -23,21 +23,21 @@ struct input_event ev;
 void * inputThread (void* args){
 
 	while ( 1 ){
-		read(fd,&ev,sizeof(struct input_event));
-		if(ev.type==2){
-			switch (ev.code){
-				case 0:
-					//x+=ev.value/19000.0;
-					th-=ev.value/(19000.0)/RADIUS;
-					break;
-				case 1:
-					//y+=ev.value/19000.0;
-					pos-= ev.value/19000.0;
-					break;
-				case 2:
-					break;
-			}
-		}
+		if(read(fd,&ev,sizeof(struct input_event))){
+			if(ev.type==2){
+				switch (ev.code){
+					case 0:
+						//y+=ev.value/19000.0;
+						pos+= ev.value/19000.0;
+						break;
+					case 1:
+						//x+=ev.value/19000.0;
+						th-=.65*ev.value/(19000.0)/RADIUS;
+						break;
+					case 2:
+						break;
+				}
+			}}
 	}
 	return 0;
 }
@@ -75,10 +75,10 @@ int main(int argc, char** argv){
 		double dt = (current_time - last_time).toSec();
 
 		double vpos = (pos-lastpos)/dt;
-	
+
 		double delta_x = ((pos-lastpos) * cos(th) );
 		double delta_y = ((pos-lastpos) * sin(th) );
-		
+
 		//double delta_th = vth * dt;
 
 		vx = 0.0;//(x-lastx)/dt;
@@ -88,7 +88,7 @@ int main(int argc, char** argv){
 
 		x += delta_x;
 		y += delta_y;
-		
+
 		lastx=x;
 		lasty=y;
 		lastth=th;

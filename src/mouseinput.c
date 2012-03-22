@@ -2,6 +2,7 @@
 
 #include <linux/input.h>
 #include <fcntl.h>
+#include <stdlib.h>
 
 int main (int argc, char ** argv){
 
@@ -17,7 +18,6 @@ int main (int argc, char ** argv){
 	while(1){
 		read(fd,&ev,sizeof(struct input_event));
 		//printf("value %d, type %d, code %d\r\n",ev.value,ev.type,ev.code);
-
 		if(ev.type==2){
 
 			switch (ev.code){

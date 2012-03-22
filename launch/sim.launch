@@ -3,8 +3,11 @@
   <node pkg="sendes" type="setup_tf" name="defaulttf" />
 
 <!-- mouse-odometry -->
-  <node pkg="sendes" type="mouseodo" name="mouse" args="/dev/input/event8 openni_camera" />
+  <node pkg="sendes" type="mouseodo" name="mouse" args="/dev/input/event5 openni_camera" />
 
-  <node pkg="rviz" type="rviz" name="visualizer" />
+
+  <node pkg="sendes" type="base_controller" name="controller" args="" />
+
+  <!-- <node pkg="rviz" type="rviz" name="visualizer" /> -->
 
 </launch>
