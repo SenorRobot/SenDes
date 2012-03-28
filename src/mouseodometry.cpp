@@ -2,11 +2,16 @@
 #include <tf/transform_broadcaster.h>
 #include <nav_msgs/Odometry.h>
 
+#include <dynamic_reconfigure/server.h>
+#include <SenDes/mouseOdometryConfig.h>
+
+
 #include <linux/input.h>
 #include <fcntl.h>
 #include <pthread.h>
 
-#define RADIUS .2 //20 cm
+//#define RADIUS .15 //15 cm
+
 
 
 double x = 0.0, lastx = 0.0;
@@ -20,6 +25,18 @@ double th = 0.0, lastth=0.0;
 int fd; //file descriptor
 struct input_event ev;
 
+double linearCalibration;
+double angularCalibration;
+
+double radius;
+
+void callback(SenDes::mouseOdometryConfig &config, uint32_t level) {
+	linearCalibration=config.linearCalibration;
+	angularCalibration=config.angularCalibration;
+	radius=config.radius;
+	ROS_INFO("Updating parameters");
+
+}
 void * inputThread (void* args){
 
 	while ( 1 ){
@@ -28,16 +45,17 @@ void * inputThread (void* args){
 				switch (ev.code){
 					case 0:
 						//y+=ev.value/19000.0;
-						pos+= ev.value/19000.0;
+						pos+= ev.value/linearCalibration;
 						break;
 					case 1:
 						//x+=ev.value/19000.0;
-						th-=.65*ev.value/(19000.0)/RADIUS;
+						th-=.65*ev.value/(angularCalibration)/radius;
 						break;
 					case 2:
 						break;
 				}
-			}}
+			}
+		}
 	}
 	return 0;
 }
@@ -49,6 +67,32 @@ int main(int argc, char** argv){
 	ros::NodeHandle n;
 	ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
 	tf::TransformBroadcaster odom_broadcaster;
+
+	dynamic_reconfigure::Server<SenDes::mouseOdometryConfig> server;
+	dynamic_reconfigure::Server<SenDes::mouseOdometryConfig>::CallbackType f;
+
+	f = boost::bind(&callback, _1, _2);
+	server.setCallback(f);
+
+
+/*
+	if (!n.getParam("linearCalibration", linearCalibration)){
+		ROS_INFO("Using default linear calibration");
+		linearCalibration=19000.0;
+		n.setParam("linearCalibration",linearCalibration);
+	}
+
+	if (!n.getParam("angularCalibration", angularCalibration)){
+		ROS_INFO("Using default angular calibration");
+		angularCalibration=19000.0;
+		n.setParam("angularCalibration",angularCalibration);
+	}
+	if (!n.getParam("radius", radius)){
+		ROS_INFO("Using default radius");
+		radius=.15;
+		n.setParam("radius",radius);
+	}
+*/
 
 	double vx = 0;
 	double vy = 0;
@@ -69,6 +113,8 @@ int main(int argc, char** argv){
 	ros::Rate r(100);
 
 	while(n.ok()){
+
+		ros::spinOnce();
 		current_time = ros::Time::now();
 
 		//compute odometry in a typical way given the velocities of the robot
@@ -130,7 +176,6 @@ int main(int argc, char** argv){
 
 		//publish the message
 		odom_pub.publish(odom);
-		printf("Published!\r\n");
 
 		last_time = current_time;
 		r.sleep();
