@@ -12,8 +12,6 @@
 
 //#define RADIUS .15 //15 cm
 
-
-
 double x = 0.0, lastx = 0.0;
 double y = 0.0, lasty = 0.0;
 
@@ -25,8 +23,8 @@ double th = 0.0, lastth=0.0;
 int fd; //file descriptor
 struct input_event ev;
 
-double linearCalibration;
-double angularCalibration;
+volatile double linearCalibration;
+volatile double angularCalibration;
 
 double radius;
 
@@ -43,13 +41,15 @@ void * inputThread (void* args){
 		if(read(fd,&ev,sizeof(struct input_event))){
 			if(ev.type==2){
 				switch (ev.code){
-					case 0:
-						//y+=ev.value/19000.0;
-						pos+= ev.value/linearCalibration;
+					case 0: //mouse x event
+						pos+= ev.value/linearCalibration *cos(angularCalibration);
+						th+=ev.value/linearCalibration/radius * sin(angularCalibration);
 						break;
 					case 1:
-						//x+=ev.value/19000.0;
-						th-=.65*ev.value/(angularCalibration)/radius;
+						//mouse y event
+						//pos+= ev.value/linearCalibration *sin(angularCalibration);
+						th+=ev.value/(linearCalibration)/radius * cos(angularCalibration);
+						
 						break;
 					case 2:
 						break;
@@ -75,7 +75,7 @@ int main(int argc, char** argv){
 	server.setCallback(f);
 
 
-/*
+
 	if (!n.getParam("linearCalibration", linearCalibration)){
 		ROS_INFO("Using default linear calibration");
 		linearCalibration=19000.0;
@@ -92,7 +92,7 @@ int main(int argc, char** argv){
 		radius=.15;
 		n.setParam("radius",radius);
 	}
-*/
+
 
 	double vx = 0;
 	double vy = 0;
@@ -114,13 +114,11 @@ int main(int argc, char** argv){
 
 	while(n.ok()){
 
-		ros::spinOnce();
 		current_time = ros::Time::now();
 
 		//compute odometry in a typical way given the velocities of the robot
 		double dt = (current_time - last_time).toSec();
 
-		double vpos = (pos-lastpos)/dt;
 
 		double delta_x = ((pos-lastpos) * cos(th) );
 		double delta_y = ((pos-lastpos) * sin(th) );
@@ -178,6 +176,8 @@ int main(int argc, char** argv){
 		odom_pub.publish(odom);
 
 		last_time = current_time;
+		
+		ros::spinOnce();
 		r.sleep();
 	}
 }
