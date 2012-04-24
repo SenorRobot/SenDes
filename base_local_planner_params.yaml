@@ -5,11 +5,12 @@ TrajectoryPlannerROS:
   max_rotational_vel: 1.57
   min_in_place_rotational_vel: 0.3
 
+
   acc_lim_th: 3.2
   acc_lim_x: 2.5
   acc_lim_y: 0
 
-  controller_frequency: 10
+  controller_frequency: 20
 
   yaw_goal_tolerance: 1.0
   xy_goal_tolerance: 0.4

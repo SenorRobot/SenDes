@@ -3,7 +3,7 @@
   <include file="$(find openni_camera)/launch/openni_node.launch"/>
 
   <!-- openni manager -->
-  <node pkg="nodelet" type="nodelet" name="openni_manager" output="screen" respawn="true" args="manager"/>
+  <node pkg="nodelet" type="nodelet" name="openni_manager" output="log" respawn="false" args="manager"/>
 
   <!-- throttling -->
   <node pkg="nodelet" type="nodelet" name="pointcloud_throttle" args="load pointcloud_to_laserscan/CloudThrottle openni_manager">

@@ -23,8 +23,9 @@ double th = 0.0, lastth=0.0;
 int fd; //file descriptor
 struct input_event ev;
 
-volatile double linearCalibration;
-volatile double angularCalibration;
+double linearCalibration;
+double angularCalibration;
+
 
 double radius;
 
@@ -47,7 +48,7 @@ void * inputThread (void* args){
 						break;
 					case 1:
 						//mouse y event
-						//pos+= ev.value/linearCalibration *sin(angularCalibration);
+						pos+= ev.value/linearCalibration *sin(angularCalibration);
 						th+=ev.value/(linearCalibration)/radius * cos(angularCalibration);
 						
 						break;
