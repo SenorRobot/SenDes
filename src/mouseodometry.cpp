@@ -22,6 +22,9 @@ double th = 0.0, lastth=0.0;
 
 int fd; //file descriptor
 struct input_event ev;
+typedef struct {
+	int32_t xVal;
+} gyro_event;
 
 double linearCalibration;
 double angularCalibration;
@@ -44,12 +47,12 @@ void *inputThread (void* args){
 				switch (ev.code){
 					case 0: //mouse x event
 						pos+= ev.value/linearCalibration *cos(angularCalibration);
-						th+=ev.value/linearCalibration/radius * sin(angularCalibration);
+						//th+=ev.value/linearCalibration/radius * sin(angularCalibration);
 						break;
 					case 1:
 						//mouse y event
 						pos+= ev.value/linearCalibration *sin(angularCalibration);
-						th+=ev.value/(linearCalibration)/radius * cos(angularCalibration);
+						//th+=ev.value/(linearCalibration)/radius * cos(angularCalibration);
 						
 						break;
 					case 2:
@@ -59,6 +62,15 @@ void *inputThread (void* args){
 		}
 	}
 	return 0;
+}
+
+void *gyroThread (void* args){
+	gyro_event gv;	
+	while(1){
+		if(read(fd,&gv, sizeof(gyro_event))){
+			th=gv.xVal;		
+		}
+	}
 }
 
 
@@ -99,12 +111,20 @@ int main(int argc, char** argv){
 	double vth = 0;
 
 	if((fd=open(argv[1],O_RDONLY))<0){
-		perror("device already open");
+		perror("Mouse Device already open");
+		exit(1);
+	}
+
+	if((fd=open(argv[2],O_RDONLY<0){
+		perror("Gyro Device already open");
 		exit(1);
 	}
 
 	pthread_t input;
 	pthread_create(&input , NULL, &inputThread, NULL);
+
+	pthread_t gyro;
+	pthread_create(&gyro, NULL, &gyroThread, NULL);
 
 	ros::Time current_time, last_time;
 	current_time = ros::Time::now();
