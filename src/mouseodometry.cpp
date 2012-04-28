@@ -36,7 +36,7 @@ void callback(SenDes::mouseOdometryConfig &config, uint32_t level) {
 	ROS_INFO("Updating parameters");
 
 }
-void * inputThread (void* args){
+void *inputThread (void* args){
 
 	while ( 1 ){
 		if(read(fd,&ev,sizeof(struct input_event))){
@@ -74,7 +74,6 @@ int main(int argc, char** argv){
 
 	f = boost::bind(&callback, _1, _2);
 	server.setCallback(f);
-
 
 
 	if (!n.getParam("linearCalibration", linearCalibration)){

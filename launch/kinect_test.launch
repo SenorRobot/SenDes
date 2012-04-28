@@ -1,0 +1,13 @@
+<launch>
+	<node pkg="SenDes" type="setup_tf" name="defaulttf" />
+	
+	<include file="launch/kinect_laser.launch"/>
+
+	<node pkg="SenDes" type="kinect_scanner" name="kinect_scanner" output="screen">
+	  <param name="start_tilt" value="-17.0"/>
+	  <param name="tilt_rate" value="0.0"/>
+	  <param name="min_tilt" value="-25.0"/>
+	  <param name="max_tilt" value="-15.0"/>
+	</node>
+
+</launch>

@@ -187,6 +187,19 @@ clean-test-results/fast:
 .PHONY : clean-test-results/fast
 
 #=============================================================================
+# Target rules for targets named kinect_scanner
+
+# Build rule for target.
+kinect_scanner: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 kinect_scanner
+.PHONY : kinect_scanner
+
+# fast build rule for target.
+kinect_scanner/fast:
+	$(MAKE) -f CMakeFiles/kinect_scanner.dir/build.make CMakeFiles/kinect_scanner.dir/build
+.PHONY : kinect_scanner/fast
+
+#=============================================================================
 # Target rules for targets named mouseodo
 
 # Build rule for target.
@@ -397,6 +410,21 @@ src/base_controller.s:
 .PHONY : src/base_controller.s
 
 # target to build an object file
+src/kinect_scanner.o:
+	$(MAKE) -f CMakeFiles/kinect_scanner.dir/build.make CMakeFiles/kinect_scanner.dir/src/kinect_scanner.o
+.PHONY : src/kinect_scanner.o
+
+# target to preprocess a source file
+src/kinect_scanner.i:
+	$(MAKE) -f CMakeFiles/kinect_scanner.dir/build.make CMakeFiles/kinect_scanner.dir/src/kinect_scanner.i
+.PHONY : src/kinect_scanner.i
+
+# target to generate assembly for a file
+src/kinect_scanner.s:
+	$(MAKE) -f CMakeFiles/kinect_scanner.dir/build.make CMakeFiles/kinect_scanner.dir/src/kinect_scanner.s
+.PHONY : src/kinect_scanner.s
+
+# target to build an object file
 src/mouseodometry.o:
 	$(MAKE) -f CMakeFiles/mouseodo.dir/build.make CMakeFiles/mouseodo.dir/src/mouseodometry.o
 .PHONY : src/mouseodometry.o
@@ -455,6 +483,7 @@ help:
 	@echo "... base_controller"
 	@echo "... clean-test-results"
 	@echo "... edit_cache"
+	@echo "... kinect_scanner"
 	@echo "... mouseodo"
 	@echo "... odometry"
 	@echo "... rebuild_cache"
@@ -474,6 +503,9 @@ help:
 	@echo "... src/base_controller.o"
 	@echo "... src/base_controller.i"
 	@echo "... src/base_controller.s"
+	@echo "... src/kinect_scanner.o"
+	@echo "... src/kinect_scanner.i"
+	@echo "... src/kinect_scanner.s"
 	@echo "... src/mouseodometry.o"
 	@echo "... src/mouseodometry.i"
 	@echo "... src/mouseodometry.s"

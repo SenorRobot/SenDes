@@ -4,8 +4,10 @@
 <node pkg="gmapping" type="slam_gmapping" name="map">
 
 	<param name="odom_frame" value="odom"/>
-	<param name="map_update_interval" value="5.0"/>
-	<param name="maxUrange" value="16.0"/>
+	<param name="map_update_interval" value="1"/>
+	<param name="transform_publish_period" value="0.005" />
+
+	<param name="maxUrange" value="8.0"/>
 	<param name="sigma" value="0.05"/>
 	<param name="kernelSize" value="1"/>
 	<param name="lstep" value="0.05"/>
@@ -15,16 +17,18 @@
 	<param name="ogain" value="3.0"/>
 	<param name="lskip" value="0"/>
 
-	<param name="srr" value="0.01"/>
+	<param name="srr" value="0.001"/>
 	<param name="srt" value="0.02"/>
 	<param name="str" value="0.01"/>
 	<param name="stt" value="0.02"/>
 
-	<param name="linearUpdate" value="1.0"/>
-	<param name="angularUpdate" value="0.5"/>
-	<param name="temporalUpdate" value="-1.0"/>
+	<param name="linearUpdate" value=".25"/>
+	<param name="angularUpdate" value="0.1"/>
+	<param name="temporalUpdate" value="1.0"/>
 	<param name="resampleThreshold" value="0.5"/>
-	<param name="particles" value="150"/>
+
+	<param name="particles" value="350"/>
+
 	<param name="xmin" value="-30"/>
 	<param name="ymin" value="-30"/>
 	<param name="xmax" value="30"/>
@@ -35,7 +39,6 @@
 	<param name="lasamplerange" value="0.005"/>
 	<param name="lasamplestep" value="0.005"/>
 
-	<param name="transform_publish_period" value="0.05" />
 
-</node>
-</launch>
+	</node>
+	</launch>

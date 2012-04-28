@@ -10,10 +10,12 @@ int main(int argc, char** argv){
   tf::TransformBroadcaster broadcaster;
 
   while(n.ok()){
-	  broadcaster.sendTransform(
+
+/*	  broadcaster.sendTransform(
 			  tf::StampedTransform(
 				  tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.0, -0.2, 0.64)),
-				  ros::Time::now(),"base_link", "openni_camera"));
+				  ros::Time::now(),"base_link", "openni_camera"));*/
+
 
 	  broadcaster.sendTransform(
 			  tf::StampedTransform(
