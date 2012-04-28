@@ -71,6 +71,7 @@ void *gyroThread (void* args){
 			th=gv.xVal;		
 		}
 	}
+	return 0;
 }
 
 
@@ -115,7 +116,7 @@ int main(int argc, char** argv){
 		exit(1);
 	}
 
-	if((fd=open(argv[2],O_RDONLY<0){
+	if((fd=open(argv[2],O_RDONLY))<0){
 		perror("Gyro Device already open");
 		exit(1);
 	}
