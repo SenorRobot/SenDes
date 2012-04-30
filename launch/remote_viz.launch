@@ -2,13 +2,14 @@
 <launch>
 
 	<!--   <env name="ROS_MASTER_URI" value="http//ranger.rit.edu:11311"/> !-->
-    <env name="DISPLAY" value=":0"/>
+   <env name="DISPLAY" value=":1"/>
 
 
   <machine name="burrito" address="senor.student.rit.edu" user="dread"
     ros-root="/opt/ros/electric/ros" 
     ros-package-path="/home/dread/ros:/opt/ros/electric/stacks" timeout="10.0" default="false">
-	<env name="ROS_HOSTNAME" value ="senor.student.rit.edu"/>
+    <env name="ROS_HOSTNAME" value ="senor.student.rit.edu"/>
+    <env name="DISPLAY" value=":1"/>
   </machine>
 
   <machine name="sombrero" address="ranger.rit.edu" user="dread" 
@@ -16,7 +17,7 @@
     ros-package-path="$(env ROS_PACKAGE_PATH)" default="true">
 
   </machine>
-  <node pkg = "rviz" type = "rviz" name = "viz" args="--sync" respawn="true" output = "screen" machine="burrito"/>
+  <node pkg = "rviz" type = "rviz" name = "viz" args="--sync --display=:0" respawn="true" output = "screen" machine="burrito"/>
 
 
 </launch>
