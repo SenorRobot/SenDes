@@ -30,10 +30,12 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(example ${PROJECT_NAME})
 rosbuild_add_executable(odometry src/odometry.cpp)
 rosbuild_add_executable(setup_tf src/setup_tf.cpp)
-rosbuild_add_executable(mouseodo src/mouseodometry.cpp)
 rosbuild_add_executable(base_controller src/base_controller.cpp)
 
 #add dynamic configure
 rosbuild_find_ros_package(dynamic_reconfigure)
 include(${dynamic_reconfigure_PACKAGE_PATH}/cmake/cfgbuild.cmake)
 gencfg()
+
+rosbuild_add_executable(mouseodo src/mouseodometry.cpp)
+rosbuild_add_executable(sonar_driver src/sonar_driver.cpp)
