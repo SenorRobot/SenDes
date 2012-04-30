@@ -10,6 +10,7 @@
 #include <fcntl.h>
 #include <pthread.h>
 
+#include <fstream>
 //#define RADIUS .15 //15 cm
 
 double x = 0.0, lastx = 0.0;
@@ -18,16 +19,20 @@ double y = 0.0, lasty = 0.0;
 double pos = 0.0;
 double lastpos = 0.0;
 
-double th = 0.0, lastth=0.0;
+volatile double th = 0.0, lastth=0.0;
 
 int fd; //file descriptor
+FILE* yawfd;
+
+char yawfile[40];
+
 struct input_event ev;
 typedef struct {
 	int32_t xVal;
 } gyro_event;
 
-double linearCalibration;
-double angularCalibration;
+volatile double linearCalibration;
+volatile double angularCalibration=0.0;
 
 
 double radius;
@@ -36,7 +41,7 @@ void callback(SenDes::mouseOdometryConfig &config, uint32_t level) {
 	linearCalibration=config.linearCalibration;
 	angularCalibration=config.angularCalibration;
 	radius=config.radius;
-	ROS_INFO("Updating parameters");
+	ROS_INFO("Updating parameters, angular:%f",angularCalibration);
 
 }
 void *inputThread (void* args){
@@ -46,30 +51,35 @@ void *inputThread (void* args){
 			if(ev.type==2){
 				switch (ev.code){
 					case 0: //mouse x event
-						pos+= ev.value/linearCalibration *cos(angularCalibration);
+						pos+= ev.value/linearCalibration;
+						
 						//th+=ev.value/linearCalibration/radius * sin(angularCalibration);
 						break;
 					case 1:
 						//mouse y event
-						pos+= ev.value/linearCalibration *sin(angularCalibration);
+						//pos+= ev.value/linearCalibration *sin(angularCalibration);
 						//th+=ev.value/(linearCalibration)/radius * cos(angularCalibration);
-						
+
 						break;
 					case 2:
 						break;
 				}
 			}
 		}
+		usleep(100);
 	}
 	return 0;
 }
 
 void *gyroThread (void* args){
-	gyro_event gv;	
+	int32_t yaw=0;
 	while(1){
-		if(read(fd,&gv, sizeof(gyro_event))){
-			th=gv.xVal;		
+		if(fscanf(yawfd,"%d",&yaw)){	
+			th=-yaw/10000.0*angularCalibration;	
+			fseek(yawfd,0,SEEK_SET);
 		}
+
+		usleep(100);
 	}
 	return 0;
 }
@@ -89,16 +99,16 @@ int main(int argc, char** argv){
 	server.setCallback(f);
 
 
-	if (!n.getParam("linearCalibration", linearCalibration)){
+	if (!n.getParam("linearCalibration",  (double& ) linearCalibration)){
 		ROS_INFO("Using default linear calibration");
 		linearCalibration=19000.0;
-		n.setParam("linearCalibration",linearCalibration);
+		n.setParam("linearCalibration", (double ) linearCalibration);
 	}
 
-	if (!n.getParam("angularCalibration", angularCalibration)){
+	if (!n.getParam("angularCalibration", (double&)angularCalibration)){
 		ROS_INFO("Using default angular calibration");
-		angularCalibration=19000.0;
-		n.setParam("angularCalibration",angularCalibration);
+		angularCalibration=1.0;
+		n.setParam("angularCalibration",(double)angularCalibration);
 	}
 	if (!n.getParam("radius", radius)){
 		ROS_INFO("Using default radius");
@@ -115,11 +125,12 @@ int main(int argc, char** argv){
 		perror("Mouse Device already open");
 		exit(1);
 	}
-
-	if((fd=open(argv[2],O_RDONLY))<0){
-		perror("Gyro Device already open");
+	if((yawfd=fopen(argv[2],"r"))<0){
+		perror("gyro Device already open");
 		exit(1);
 	}
+
+	strncpy(yawfile,argv[2],40);
 
 	pthread_t input;
 	pthread_create(&input , NULL, &inputThread, NULL);
@@ -197,7 +208,7 @@ int main(int argc, char** argv){
 		odom_pub.publish(odom);
 
 		last_time = current_time;
-		
+
 		ros::spinOnce();
 		r.sleep();
 	}
