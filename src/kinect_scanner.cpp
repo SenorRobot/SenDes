@@ -35,7 +35,7 @@ tf::TransformBroadcaster *broadpointer;
 void tiltcallback(const sensor_msgs::Imu tilt){
 
 
-	double angle= -1* tiltVal *3.14159/180;
+	double angle= -1* tiltVal *3.14159/180/2;
 
 	
 
@@ -43,7 +43,7 @@ void tiltcallback(const sensor_msgs::Imu tilt){
 
 	broadpointer->sendTransform(
 			tf::StampedTransform(
-				tf::Transform(tf::Quaternion(0, angle, 0, 1), tf::Vector3(0.0, -0.2, 0.64)),
+				tf::Transform(tf::Quaternion(0, angle, 0, 1), tf::Vector3(0.2, 0.0, 0.64)),
 				ros::Time::now(),"base_link", "openni_camera"));
 
 }
