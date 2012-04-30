@@ -12,15 +12,14 @@
 #define NUM_SONARS 6
 
 int fd; //file descriptor
-				        //x,y,z,x,y,z,w
-double sonar_pos[NUM_SONARS][7] = {
-					{0,0,0,0,0,-PI,1},
-					{0,0,0,0,0,-PI/2,1},
-					{0,0,0,0,0,0,1},
-					{0,0,0,0,0,PI/2,1},
-					{0,0,0,0,0,PI,1},
-					{0,0,0,0,0,2*PI,1}
-}
+				        //x,y,z,r,p,y
+double sonar_pos[NUM_SONARS][6] = {
+					{0.0,-.2,0.2,0.0,0.0,-PI/2},
+					{.14,-.14,0.2,0.0,0.0,-PI/4},
+					{0.2,0.0,0.2,0.0,0.0,0.0},
+					{.14,.14,0.2,0.0,0.0,PI/4},
+					{0.0,0.2,0.2,0.0,0.0,PI/2},
+					{-.2,.0,0.2,0.0,0.0,PI}};
 
 char sonar_range[NUM_SONARS];
 
@@ -35,6 +34,7 @@ void *sonarThread (void* args){
 			for(int i= 0; i< NUM_SONARS;i++){
 				sonar_range[i]=sonar_string[i*2];
 			}			
+		lseek(fd,0,SEEK_SET);
 
 		}
 		usleep(10000); //10 milliseconds. 10hz
@@ -47,14 +47,13 @@ int main(int argc, char** argv){
 	ros::init(argc, argv, "odometry_publisher");
 
 	ros::NodeHandle n;
-	ros::Publisher  = n.advertise<>("sonar", 50);
 	tf::TransformBroadcaster tf_broadcaster;
-
-
-
-	double vx = 0;
-	double vy = 0;
-	double vth = 0;
+	ros::Publisher sonar_pub[NUM_SONARS];
+	for(int i =0; i<NUM_SONARS;i++){
+		char sonar_topic[30];
+		sprintf(sonar_topic,"/sonars/sonar%d",i);
+		sonar_pub[i]= n.advertise<sensor_msgs::Range>(sonar_topic, 50);
+	}
 
 	if((fd=open(argv[1],O_RDONLY))<0){
 		perror("error opening sonar file");
@@ -63,7 +62,7 @@ int main(int argc, char** argv){
 
 
 	pthread_t input;
-	pthread_create(&input , NULL, &inputThread, NULL);
+	pthread_create(&input , NULL, &sonarThread, NULL);
 
 	ros::Time current_time, last_time;
 	current_time = ros::Time::now();
@@ -75,16 +74,28 @@ int main(int argc, char** argv){
 
 		current_time = ros::Time::now();
 
-		for(int i =0; i< NUM_SONAR; i++){
+		for(int i =0; i< NUM_SONARS; i++){
 			char sonar_frame[10];
 
 			sprintf(sonar_frame,"sonar[%d]",i);
 			tf_broadcaster.sendTransform(
 					tf::StampedTransform(
-						tf::Transform(	tf::Quaternion(sonar_pos[i][0],sonar_pos[i][1],
-								sonar_pos[i][2],sonar_pos[i][3]),
-							tf::Vector3(sonar_pos[i][4],sonar_pos[i][5],sonar_pos[i][6])),
+						tf::Transform(	tf::createQuaternionFromRPY(sonar_pos[i][3],sonar_pos[i][4],
+								sonar_pos[i][5]),
+							tf::Vector3(sonar_pos[i][0],sonar_pos[i][1],sonar_pos[i][2])),
 						ros::Time::now(),"base_link", sonar_frame ));
+
+			sensor_msgs::Range sonar_msg;
+			sonar_msg.radiation_type=0; //ULTRASOUND;
+			sonar_msg.field_of_view=0.628318531; //36 degrees
+			sonar_msg.min_range=0.1524; //6 inches
+			sonar_msg.max_range=6.5; //256 inches
+			sonar_msg.range=sonar_range[i]/39.3700787; //convert from inches to meters
+
+			sonar_msg.header.frame_id=sonar_frame;		
+
+			sonar_pub[i].publish(sonar_msg);
+
 		}
 		last_time = current_time;
 
