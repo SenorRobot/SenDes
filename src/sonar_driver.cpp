@@ -27,12 +27,12 @@ char sonar_range[NUM_SONARS];
 
 
 void *sonarThread (void* args){
-	char sonar_string[NUM_SONARS*2-1];//one char and one comma per reading, minus fencepost
+	char sonar_string[NUM_SONARS];
 
 	while(1){
 		if(read(fd,sonar_string, sizeof(sonar_string))){
 			for(int i= 0; i< NUM_SONARS;i++){
-				sonar_range[i]=sonar_string[i*2];
+				sonar_range[i]=sonar_string[i];
 			}			
 		lseek(fd,0,SEEK_SET);
 
@@ -44,15 +44,16 @@ void *sonarThread (void* args){
 
 
 int main(int argc, char** argv){
-	ros::init(argc, argv, "odometry_publisher");
+	ros::init(argc, argv, "sonar_driver");
 
 	ros::NodeHandle n;
 	tf::TransformBroadcaster tf_broadcaster;
+	
 	ros::Publisher sonar_pub[NUM_SONARS];
-	for(int i =0; i<NUM_SONARS;i++){
-		char sonar_topic[30];
-		sprintf(sonar_topic,"/sonars/sonar%d",i);
-		sonar_pub[i]= n.advertise<sensor_msgs::Range>(sonar_topic, 50);
+	for (int i =0; i<NUM_SONARS;i++){
+		char topic[30];
+		sprintf(topic,"/sonar/sonar%d",i);
+		sonar_pub[i]= n.advertise<sensor_msgs::Range>( topic, 50);
 	}
 
 	if((fd=open(argv[1],O_RDONLY))<0){
@@ -77,13 +78,13 @@ int main(int argc, char** argv){
 		for(int i =0; i< NUM_SONARS; i++){
 			char sonar_frame[10];
 
-			sprintf(sonar_frame,"sonar[%d]",i);
+			sprintf(sonar_frame,"/sonar%d",i);
 			tf_broadcaster.sendTransform(
 					tf::StampedTransform(
 						tf::Transform(	tf::createQuaternionFromRPY(sonar_pos[i][3],sonar_pos[i][4],
 								sonar_pos[i][5]),
 							tf::Vector3(sonar_pos[i][0],sonar_pos[i][1],sonar_pos[i][2])),
-						ros::Time::now(),"base_link", sonar_frame ));
+						ros::Time::now(),"/base_link", sonar_frame ));
 
 			sensor_msgs::Range sonar_msg;
 			sonar_msg.radiation_type=0; //ULTRASOUND;
