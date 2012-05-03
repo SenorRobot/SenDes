@@ -1,7 +1,7 @@
 #include <ros/ros.h>
 #include <tf/transform_broadcaster.h>
 #include <sensor_msgs/Range.h>
-
+#include <sensor_msgs/LaserScan.h>
 
 
 #include <linux/input.h>
@@ -10,18 +10,19 @@
 
 #define PI 3.14159
 #define NUM_SONARS 6
+#define SCANS_PER_SONAR 6
 
 int fd; //file descriptor
 				        //x,y,z,r,p,y
 double sonar_pos[NUM_SONARS][6] = {
-					{0.0,-.2,0.2,0.0,0.0,-PI/2},
-					{.14,-.14,0.2,0.0,0.0,-PI/4},
-					{0.2,0.0,0.2,0.0,0.0,0.0},
-					{.14,.14,0.2,0.0,0.0,PI/4},
 					{0.0,0.2,0.2,0.0,0.0,PI/2},
+					{.14,.14,0.2,0.0,0.0,PI/4},
+					{0.2,0.0,0.2,0.0,0.0,0.0},
+					{.14,-.14,0.2,0.0,0.0,-PI/4},
+					{0.0,-.2,0.2,0.0,0.0,-PI/2},
 					{-.2,.0,0.2,0.0,0.0,PI}};
 
-char sonar_range[NUM_SONARS];
+unsigned char sonar_range[NUM_SONARS];
 
 
 
@@ -50,10 +51,13 @@ int main(int argc, char** argv){
 	tf::TransformBroadcaster tf_broadcaster;
 	
 	ros::Publisher sonar_pub[NUM_SONARS];
+	ros::Publisher laser_pub[NUM_SONARS];
 	for (int i =0; i<NUM_SONARS;i++){
-		char topic[30];
+		char topic[50];
 		sprintf(topic,"/sonar/sonar%d",i);
-		sonar_pub[i]= n.advertise<sensor_msgs::Range>( topic, 50);
+		sonar_pub[i]= n.advertise<sensor_msgs::Range>( topic, 10);
+		sprintf(topic,"/sonarlaser/sonar%d",i);
+		laser_pub[i]= n.advertise<sensor_msgs::LaserScan>( topic, 10);
 	}
 
 	if((fd=open(argv[1],O_RDONLY))<0){
@@ -96,6 +100,18 @@ int main(int argc, char** argv){
 			sonar_msg.header.frame_id=sonar_frame;		
 
 			sonar_pub[i].publish(sonar_msg);
+
+			sensor_msgs::LaserScanPtr output(new(sensor_msgs::LaserScan));
+			output->header= std_msgs::Header();
+			output->header.frame_id = sonar_frame;
+			output->angle_min=-sonar_msg.field_of_view/2;
+			output->angle_max=sonar_msg.field_of_view/2;
+			output->angle_increment=sonar_msg.field_of_view/SCANS_PER_SONAR;
+			output->time_increment=0;
+			output->range_min=0.1524;
+			output->range_max=6.5;
+
+			output->ranges.assign(SCANS_PER_SONAR,sonar_msg.range);
 
 		}
 		last_time = current_time;
