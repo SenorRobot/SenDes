@@ -113,6 +113,8 @@ int main(int argc, char** argv){
 
 			output->ranges.assign(SCANS_PER_SONAR,sonar_msg.range);
 
+			laser_pub[i].publish(output);
+
 		}
 		last_time = current_time;
 
