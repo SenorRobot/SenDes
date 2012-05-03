@@ -1,6 +1,20 @@
 <launch>
 
-	<node pkg="map_server" type="map_server" name="map_serve" args="$(find SenDes)/map.yaml"/>
-	<node pkg="amcl" type="amcl" name="amcl" />
+	<node pkg="map_server" type="map_server" name="map_serve" args="$(find SenDes)/goodmap-hardlines.yaml"/>
+	<node pkg="amcl" type="amcl" name="amcl">
+		<param name="max_particles" value ="2000" />
+		
+		<param name="base_frame_id" value ="/base_link" />
+		<param name="global_frame_id" value ="/map" />
+		<param name="odom_alpha1" value =".2" /> <!--theta due to theta high because our angular odometry sucks -->
+		<param name="odom_alpha2" value =".3" />  <!--theta due to linear high because our mechanics suck -->
+		<param name="odom_alpha3" value =".4" /> <!--linear due to linear really high because map was made before we calibrated linear motion -->
+		<param name="odom_alpha4" value =".2" /> <!--linear due to theta -->
+		<param name="odom_alpha5" value =".2" />
+		<param name="laser_max_beams" value ="30" />
+		<param name="recover_alpha_slow" value =".001" />
+		<param name="recovery_alpha_fast" value ="0.1" />
+
+	</node>
 
 </launch>

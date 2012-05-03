@@ -20,7 +20,7 @@ int main(int argc, char** argv){
 	  broadcaster.sendTransform(
 			  tf::StampedTransform(
 				  tf::Transform(tf::Quaternion(0, 0, 0, 1), tf::Vector3(0.2, 0.0, 1.05)),
-				  ros::Time::now(),"base_link", "wifiAntenna"));
+				  ros::Time::now(),"/base_link", "/wifiAntenna"));
 	  r.sleep();
   }
 }

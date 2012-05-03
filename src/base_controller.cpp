@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 
-#define BASE_RADIUS 0.1524 	//base radius of 6 inches in m
+#define BASE_RADIUS 0.12 	//base radius of 6 inches in m
 #define MPS_TO_PWM  256.0	//calibration constant. Meters per second to duty cycle
 
 void cmdVelReceived(const geometry_msgs::Twist::ConstPtr& cmd_vel);
