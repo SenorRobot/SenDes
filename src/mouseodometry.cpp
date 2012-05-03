@@ -66,7 +66,7 @@ void *inputThread (void* args){
 				}
 			}
 		}
-		usleep(100);
+		usleep(10);
 	}
 	return 0;
 }
@@ -89,7 +89,7 @@ int main(int argc, char** argv){
 	ros::init(argc, argv, "odometry_publisher");
 
 	ros::NodeHandle n;
-	ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("odom", 50);
+	ros::Publisher odom_pub = n.advertise<nav_msgs::Odometry>("/odom", 50);
 	tf::TransformBroadcaster odom_broadcaster;
 
 	dynamic_reconfigure::Server<SenDes::mouseOdometryConfig> server;
@@ -101,13 +101,13 @@ int main(int argc, char** argv){
 
 	if (!n.getParam("linearCalibration",  (double& ) linearCalibration)){
 		ROS_INFO("Using default linear calibration");
-		linearCalibration=19000.0;
+		linearCalibration=29500.0;
 		n.setParam("linearCalibration", (double ) linearCalibration);
 	}
 
 	if (!n.getParam("angularCalibration", (double&)angularCalibration)){
 		ROS_INFO("Using default angular calibration");
-		angularCalibration=1.0;
+		angularCalibration=1.2;
 		n.setParam("angularCalibration",(double)angularCalibration);
 	}
 	if (!n.getParam("radius", radius)){
@@ -142,7 +142,7 @@ int main(int argc, char** argv){
 	current_time = ros::Time::now();
 	last_time = ros::Time::now();
 
-	ros::Rate r(100);
+	ros::Rate r(1000);
 
 	while(n.ok()){
 
@@ -176,8 +176,8 @@ int main(int argc, char** argv){
 		//first, we'll publish the transform over tf
 		geometry_msgs::TransformStamped odom_trans;
 		odom_trans.header.stamp = current_time;
-		odom_trans.header.frame_id = "odom";
-		odom_trans.child_frame_id = "base_link";
+		odom_trans.header.frame_id = "/odom";
+		odom_trans.child_frame_id = "/base_link";
 
 		odom_trans.transform.translation.x = x;
 		odom_trans.transform.translation.y = y;

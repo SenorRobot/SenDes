@@ -14,14 +14,14 @@
 int fd; //file descriptor
 				        //x,y,z,r,p,y
 double sonar_pos[NUM_SONARS][6] = {
-					{0.0,-.2,0.2,0.0,0.0,-PI/2},
-					{.14,-.14,0.2,0.0,0.0,-PI/4},
-					{0.2,0.0,0.2,0.0,0.0,0.0},
-					{.14,.14,0.2,0.0,0.0,PI/4},
 					{0.0,0.2,0.2,0.0,0.0,PI/2},
+					{.14,.14,0.2,0.0,0.0,PI/4},
+					{0.2,0.0,0.2,0.0,0.0,0.0},
+					{.14,-.14,0.2,0.0,0.0,-PI/4},
+					{0.0,-.2,0.2,0.0,0.0,-PI/2},
 					{-.2,.0,0.2,0.0,0.0,PI}};
 
-char sonar_range[NUM_SONARS];
+unsigned char sonar_range[NUM_SONARS];
 
 
 
@@ -90,7 +90,7 @@ int main(int argc, char** argv){
 			sonar_msg.radiation_type=0; //ULTRASOUND;
 			sonar_msg.field_of_view=0.628318531; //36 degrees
 			sonar_msg.min_range=0.1524; //6 inches
-			sonar_msg.max_range=6.5; //256 inches
+			sonar_msg.max_range=5; //256 inches
 			sonar_msg.range=sonar_range[i]/39.3700787; //convert from inches to meters
 
 			sonar_msg.header.frame_id=sonar_frame;		

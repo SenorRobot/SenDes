@@ -6,7 +6,6 @@
 	<include file="launch/kinect_laser.launch"/>
 	
 
-
 <!-- default transforms -->
 	<node pkg="SenDes" type="setup_tf" name="defaulttf" />
 
@@ -17,9 +16,9 @@
 	  <param name="max_tilt" value="-15.0"/>
 	</node>
 <!-- mouse-odometry -->
-	<node pkg="SenDes" type="mouseodo" name="mouse" output="screen" args="/dev/input/event5 /dev/gyro_yaw">
-		<param name="linearCalibration" value="26000"/>
-		<param name="angularCalibration" value="1.0"/>
+	<node pkg="SenDes" type="mouseodo" name="mouse" output="screen" args="/dev/odometer /dev/gyro_yaw">
+		<param name="linearCalibration" value="19500"/>
+		<param name="angularCalibration" value="1.2"/>
 		<param name="radius" value=".2"/>
 
 	</node>

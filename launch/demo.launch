@@ -1,0 +1,9 @@
+
+<launch>
+
+	<!-- <include file="launch/remote_viz.launch"/> -->
+	<include file="launch/all.launch"/>
+	<include file="launch/mapping_static.launch"/>
+	<include file="launch/move.launch"/>
+
+</launch>
