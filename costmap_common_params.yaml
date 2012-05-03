@@ -6,7 +6,12 @@ robot_radius: 0.30
 
 inflation_radius: 0.75
 
-observation_sources: kinect
+observation_sources: kinect sonar0 sonar1 sonar2 sonar3 sonar4 sonar5
 kinect: {data_type: PointCloud2, topic: cloudHoriz, marking: true, clearing: true}
 #kinect: {data_type: LaserScan, topic: scan, marking: true, clearing: true}
-#sonar0: {sensor_frame: /sonar0, data_type: Range, topic: /sonar/sonar0, marking: true, clearing: true}
+sonar0: {sensor_frame: /sonar0, data_type: LaserScan, topic: /sonarlaser/sonar0, marking: false, clearing: true}
+sonar1: {sensor_frame: /sonar1, data_type: LaserScan, topic: /sonarlaser/sonar1, marking: false, clearing: true}
+sonar2: {sensor_frame: /sonar2, data_type: LaserScan, topic: /sonarlaser/sonar2, marking: false, clearing: true}
+sonar3: {sensor_frame: /sonar3, data_type: LaserScan, topic: /sonarlaser/sonar3, marking: false, clearing: true}
+sonar4: {sensor_frame: /sonar4, data_type: LaserScan, topic: /sonarlaser/sonar4, marking: false, clearing: true}
+sonar5: {sensor_frame: /sonar5, data_type: LaserScan, topic: /sonarlaser/sonar5, marking: false, clearing: true}
